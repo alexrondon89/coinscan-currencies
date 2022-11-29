@@ -1,0 +1,13 @@
+{
+  "service": "coinscan-currencies",
+  "version": "0.0.1",
+  "port": ":4000",
+  "coingecko":{
+    "baseUrl": ""
+  },
+  "cache": {
+    "timeToUpdate": 40,
+    "numberOfElements": 500,
+    "maxNumberOfElements": 1000
+  }
+}
