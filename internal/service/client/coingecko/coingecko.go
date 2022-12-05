@@ -1,9 +1,17 @@
 package coingecko
 
 import (
-	"github.com/alexrondon89/coinscan-currencies/cmd/config"
-	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
+	"encoding/json"
+	"github.com/alexrondon89/coinscan-common/error"
+	"github.com/alexrondon89/coinscan-common/http"
 	"github.com/sirupsen/logrus"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/alexrondon89/coinscan-currencies/cmd/config"
+	"github.com/alexrondon89/coinscan-currencies/internal/platform"
+	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
 )
 
 type coingecko struct {
@@ -18,6 +26,33 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 	}
 }
 
-func (cg *coingecko) GetPrices() (interface{}, error) {
-	return nil, nil
+func (cg coingecko) GetCoinPrice() (client.ClientResp, error.Error) {
+	header := map[string][]string{"content-type": {"application/json"}}
+	path := strings.Replace(cg.config.Coingecko.Url.Endpoints["coininfo"], ":coinid", "bitcoin", 1)
+	resp, err := http.New("GET", url.PathEscape(cg.config.Coingecko.Url.BaseUrl), path).
+		AddHeader(header).
+		Exec()
+
+	if err != nil {
+		return client.ClientResp{}, error.New(platform.HttpRespErr, err)
+	}
+
+	respObject := CoinGeckoResp{}
+	err = json.Unmarshal(resp.Body, &respObject)
+	if err != nil {
+		return client.ClientResp{}, error.New(platform.UnmarshalErr, err)
+	}
+
+	return buildClientResponse(respObject), nil
+}
+
+func buildClientResponse(respObject CoinGeckoResp) client.ClientResp {
+	return client.ClientResp{
+		Name: respObject.Name,
+		Info: client.Coin{
+			Symbol:    respObject.Symbol,
+			UsdPrice:  respObject.MarketData.CurrentPrice.Usd,
+			Timestamp: time.Now().UTC().String(),
+		},
+	}
 }

@@ -38,8 +38,12 @@ cloud.google.com/go/storage v1.14.0/go.mod h1:GrKmX003DSIwi9o29oFT7YDnHYwZoctc3f
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/alexrondon89/coinscan-common v0.0.1 h1:SeQAliWw0lwKdmRd1cXzdGO8q2aQQTgaAcaYjLMLf7s=
-github.com/alexrondon89/coinscan-common v0.0.1/go.mod h1:qHSDrCnGTwFFwEFPwo04jX79ne1U1c2BQMO50S22LmM=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20221204203959-4beb1d0a2aad h1:EBnQg7FDIsD4w+N1nK//mk2T068HIw+JSd3Oy7aYrOA=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20221204203959-4beb1d0a2aad/go.mod h1:qHSDrCnGTwFFwEFPwo04jX79ne1U1c2BQMO50S22LmM=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20221204204939-798988f26e2b h1:y9aAgy7wfQyQ/bsXjXxQpojElfbM9zO50dbIPWjFnhE=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20221204204939-798988f26e2b/go.mod h1:qHSDrCnGTwFFwEFPwo04jX79ne1U1c2BQMO50S22LmM=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20221204214846-0dda91767beb h1:fVi7VftaDr3gFTYbzjoTX8g/d0jofLOfpZIyjnQ4niA=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20221204214846-0dda91767beb/go.mod h1:qHSDrCnGTwFFwEFPwo04jX79ne1U1c2BQMO50S22LmM=
 github.com/andybalholm/brotli v1.0.4 h1:V7DdXeJtZscaqfNuAdSRuRFzuiKlHSC/Zh3zl9qY3JY=
 github.com/andybalholm/brotli v1.0.4/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

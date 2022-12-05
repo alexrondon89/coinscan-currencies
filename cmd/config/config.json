@@ -3,7 +3,13 @@
   "version": "0.0.1",
   "port": ":4000",
   "coingecko":{
-    "baseUrl": ""
+    "url": {
+      "baseUrl": "api.coingecko.com",
+      "endpoints": {
+        "ping":"/ping",
+        "coinInfo":"/api/v3/coins/:coinid"
+      }
+    }
   },
   "cache": {
     "timeToUpdate": 40,

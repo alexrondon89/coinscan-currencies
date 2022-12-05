@@ -3,7 +3,7 @@ module github.com/alexrondon89/coinscan-currencies
 go 1.18
 
 require (
-	github.com/alexrondon89/coinscan-common v0.0.1
+	github.com/alexrondon89/coinscan-common v0.0.2-0.20221204214846-0dda91767beb
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/viper v1.14.0

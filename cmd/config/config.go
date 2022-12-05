@@ -9,7 +9,12 @@ type Config struct {
 }
 
 type service struct {
-	BaseUrl string
+	Url url
+}
+
+type url struct {
+	BaseUrl   string
+	Endpoints map[string]string
 }
 
 type cache struct {
