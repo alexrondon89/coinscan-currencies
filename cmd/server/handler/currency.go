@@ -23,7 +23,7 @@ func NewCurrencyHandler(logger *logrus.Logger, config *config.Config, currencySr
 }
 
 func (cu currency) GetPrices(c *fiber.Ctx) error {
-	prices, err := cu.currencySrv.GetPricesFromApis(c)
+	prices, err := cu.currencySrv.GetPricesFromApis(c.Context())
 	if err != nil {
 		return c.Status(err.StatusCode()).JSON(err.Type())
 	}

@@ -11,9 +11,14 @@
       }
     }
   },
-  "cache": {
-    "timeToUpdate": 40,
-    "numberOfElements": 500,
-    "maxNumberOfElements": 1000
+  "redis": {
+    "host": "localhost",
+    "port": "6379",
+    "password": "mypassword",
+    "db": 0,
+    "cache": {
+      "timeToUpdate": 5,
+      "expirationTime": 86400
+    }
   }
 }

@@ -1,14 +1,15 @@
 package coingecko
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/alexrondon89/coinscan-common/error"
-	"github.com/alexrondon89/coinscan-common/http"
-	"github.com/sirupsen/logrus"
-	"net/url"
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
+	"github.com/alexrondon89/coinscan-common/error"
+	"github.com/alexrondon89/coinscan-common/http"
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
 	"github.com/alexrondon89/coinscan-currencies/internal/platform"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
@@ -26,10 +27,10 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 	}
 }
 
-func (cg coingecko) GetCoinPrice() (client.ClientResp, error.Error) {
+func (cg coingecko) GetCoinPrice(c context.Context) (client.ClientResp, error.Error) {
 	header := map[string][]string{"content-type": {"application/json"}}
 	path := strings.Replace(cg.config.Coingecko.Url.Endpoints["coininfo"], ":coinid", "bitcoin", 1)
-	resp, err := http.New("GET", url.PathEscape(cg.config.Coingecko.Url.BaseUrl), path).
+	resp, err := http.New("GET", cg.config.Coingecko.Url.BaseUrl, path).
 		AddHeader(header).
 		Exec()
 

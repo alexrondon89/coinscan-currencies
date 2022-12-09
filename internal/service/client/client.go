@@ -1,9 +1,12 @@
 package client
 
-import "github.com/alexrondon89/coinscan-common/error"
+import (
+	"context"
+	"github.com/alexrondon89/coinscan-common/error"
+)
 
 type ClientIntf interface {
-	GetCoinPrice() (ClientResp, error.Error)
+	GetCoinPrice(c context.Context) (ClientResp, error.Error)
 }
 
 type ClientResp struct {

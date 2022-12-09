@@ -5,7 +5,7 @@ type Config struct {
 	Version   string
 	Port      string
 	Coingecko service
-	Cache     cache
+	Redis     redis
 }
 
 type service struct {
@@ -18,7 +18,14 @@ type url struct {
 }
 
 type cache struct {
-	TimeToUpdate        uint16
-	NumberOfElements    uint16
-	MaxNumberOfElements uint16
+	TimeToUpdate   uint16
+	ExpirationTime uint16
+}
+
+type redis struct {
+	Host     string
+	Port     string
+	Password string
+	Db       int
+	Cache    cache
 }
