@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/alexrondon89/coinscan-common/error"
 	"github.com/alexrondon89/coinscan-common/redis"
 	"github.com/alexrondon89/coinscan-currencies/internal/platform"
@@ -61,14 +62,40 @@ func (s currencySrv) updateCacheLastPrices() {
 	}()
 }
 
-func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceResp, error.Error) {
-	prices, _, err := s.redis.Scan(c, 0, "*", int64(s.config.Redis.Cache.ItemsToRecover)-1)
-	if err != nil && err.Error() != "value not found" {
-		return []internal.ServiceResp{}, error.New(platform.GetItemsRedisErr, err)
+func (s currencySrv) getPricesFromRedis(c context.Context, cursor uint64, match string, numberOfItems int64) ([]string, error.Error) {
+	items, nextCursor, err := s.redis.Scan(c, cursor, match, numberOfItems)
+	if err != nil {
+		return nil, error.New(platform.GetItemsRedisErr, err)
+	}
+	itemsFound := len(items)
+	if itemsFound == 0 {
+		return items, nil
 	}
 
-	if len(prices) == 0 {
-		s.logger.Info("item not found in redis service... calling client coingecko")
+	sort.Strings(items)
+	s.logger.Info(fmt.Sprintf("%d elements found in redis", itemsFound))
+	if itemsFound < int(numberOfItems) && nextCursor != cursor {
+		difference := int(numberOfItems) - itemsFound
+		s.logger.Info(fmt.Sprintf("new recursive call in redis is neccessary to find %d elements", difference))
+		moreItems, err := s.getPricesFromRedis(c, nextCursor, match, int64(difference))
+		if err != nil {
+			return nil, error.New(platform.GetItemsRedisErr, err)
+		}
+
+		items = append(items, moreItems...)
+	}
+
+	return items, nil
+}
+
+func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceResp, error.Error) {
+	items, err := s.getPricesFromRedis(c, 0, "*", int64(s.config.Redis.Cache.ItemsToRecover))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(items) == 0 {
+		s.logger.Info("items not found in redis service... calling clients")
 		resp, err := s.getPrices()
 		if err != nil {
 			return nil, err
@@ -76,9 +103,8 @@ func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceRes
 		return []internal.ServiceResp{resp}, nil
 	}
 
-	sort.Strings(prices)
 	response := []internal.ServiceResp{}
-	for _, key := range prices {
+	for _, key := range items {
 		item, err := s.redis.GetItem(c, key)
 		if err != nil {
 			return nil, error.New(platform.GetItemsRedisErr, err)

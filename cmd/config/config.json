@@ -17,7 +17,7 @@
     "password": "mypassword",
     "db": 0,
     "cache": {
-      "timeToUpdate": 5,
+      "timeToUpdate": 15,
       "expirationTime": 86400,
       "itemsToRecover": 100
     }

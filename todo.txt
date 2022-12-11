@@ -1,5 +1,4 @@
 - agregar las variablas de valor/clave a traves de variable de ambiente, lo mismo para docker
-- cambiar la clave/valor de redis a una lista por cada clave
 - agregar goroutines para ether y bnb
 - agregar cliente coinmarketcap
 - agregar goroutines para ether y bnb
