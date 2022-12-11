@@ -4,7 +4,6 @@ type CoinGeckoResp struct {
 	Name       string `json:"name"`
 	Symbol     string `json:"symbol"`
 	MarketData Prices `json:"market_data"`
-	Timestamp  string `json:"timestamp"`
 }
 
 type Prices struct {

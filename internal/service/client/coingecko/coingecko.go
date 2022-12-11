@@ -3,10 +3,8 @@ package coingecko
 import (
 	"context"
 	"encoding/json"
-	"strings"
-	"time"
-
 	"github.com/sirupsen/logrus"
+	"strings"
 
 	"github.com/alexrondon89/coinscan-common/error"
 	"github.com/alexrondon89/coinscan-common/http"
@@ -27,9 +25,9 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 	}
 }
 
-func (cg coingecko) GetCoinPrice(c context.Context) (client.ClientResp, error.Error) {
+func (cg coingecko) GetCoinPrice(c context.Context, coin string) (client.ClientResp, error.Error) {
 	header := map[string][]string{"content-type": {"application/json"}}
-	path := strings.Replace(cg.config.Coingecko.Url.Endpoints["coininfo"], ":coinid", "bitcoin", 1)
+	path := strings.Replace(cg.config.Coingecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
 	resp, err := http.New("GET", cg.config.Coingecko.Url.BaseUrl, path).
 		AddHeader(header).
 		Exec()
@@ -49,11 +47,8 @@ func (cg coingecko) GetCoinPrice(c context.Context) (client.ClientResp, error.Er
 
 func buildClientResponse(respObject CoinGeckoResp) client.ClientResp {
 	return client.ClientResp{
-		Name: respObject.Name,
-		Info: client.Coin{
-			Symbol:    respObject.Symbol,
-			UsdPrice:  respObject.MarketData.CurrentPrice.Usd,
-			Timestamp: time.Now().UTC().String(),
-		},
+		Name:     respObject.Name,
+		Symbol:   respObject.Symbol,
+		UsdPrice: respObject.MarketData.CurrentPrice.Usd,
 	}
 }

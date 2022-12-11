@@ -7,6 +7,7 @@ import (
 	"github.com/alexrondon89/coinscan-common/redis"
 	"github.com/alexrondon89/coinscan-currencies/internal/platform"
 	"github.com/sirupsen/logrus"
+	"sort"
 	"time"
 
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
@@ -15,18 +16,20 @@ import (
 )
 
 type currencySrv struct {
-	logger    *logrus.Logger
-	config    *config.Config
-	coinGecko client.ClientIntf
-	redis     redis.RedisIntf
+	logger        *logrus.Logger
+	config        *config.Config
+	coingecko     client.ClientIntf
+	coinmarketcap client.ClientIntf
+	redis         redis.RedisIntf
 }
 
-func New(logger *logrus.Logger, config *config.Config, coinGecko client.ClientIntf, redis redis.RedisIntf) internal.ServiceIntf {
+func New(logger *logrus.Logger, config *config.Config, coingecko, coinmarketcap client.ClientIntf, redis redis.RedisIntf) internal.ServiceIntf {
 	cuSrv := currencySrv{
-		logger:    logger,
-		config:    config,
-		coinGecko: coinGecko,
-		redis:     redis,
+		logger:        logger,
+		config:        config,
+		coingecko:     coingecko,
+		coinmarketcap: coinmarketcap,
+		redis:         redis,
 	}
 	cuSrv.updateCacheLastPrices()
 	return cuSrv
@@ -38,12 +41,14 @@ func (s currencySrv) updateCacheLastPrices() {
 		for {
 			select {
 			case <-ticker.C:
-				price, err := s.coinGecko.GetCoinPrice(context.Background())
+				serviceResp, err := s.getPrices()
 				if err == nil {
-					if value, err := json.Marshal(price); err == nil {
-						err := s.redis.SetItem(context.Background(), price.Name, value, time.Duration(s.config.Redis.Cache.ExpirationTime)*time.Second)
+					if value, err := json.Marshal(serviceResp); err == nil {
+						expiration := time.Duration(s.config.Redis.Cache.ExpirationTime) * time.Second
+						err := s.redis.SetItem(context.Background(), serviceResp.Timestamp, value, expiration)
 						if err != nil {
 							s.logger.Error("error saving with SetItem method in redis: " + err.Error())
+							continue
 						}
 						s.logger.Info("prices updated in redis cache... ")
 						continue
@@ -56,27 +61,61 @@ func (s currencySrv) updateCacheLastPrices() {
 	}()
 }
 
-func (s currencySrv) GetPricesFromApis(c context.Context) (client.ClientResp, error.Error) {
-	prices, err := s.redis.GetItem(c, "BitcOin")
+func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceResp, error.Error) {
+	prices, _, err := s.redis.Scan(c, 0, "*", int64(s.config.Redis.Cache.ItemsToRecover)-1)
 	if err != nil && err.Error() != "value not found" {
-		return client.ClientResp{}, error.New(platform.GetItemsRedisErr, err)
+		return []internal.ServiceResp{}, error.New(platform.GetItemsRedisErr, err)
 	}
 
 	if len(prices) == 0 {
 		s.logger.Info("item not found in redis service... calling client coingecko")
-		resp, err := s.coinGecko.GetCoinPrice(c)
+		resp, err := s.getPrices()
 		if err != nil {
-			return resp, err
+			return nil, err
 		}
-		return resp, nil
+		return []internal.ServiceResp{resp}, nil
 	}
 
-	s.logger.Info("item found from redis client")
-	clientResp := client.ClientResp{}
-	err = json.Unmarshal([]byte(prices), &clientResp)
+	sort.Strings(prices)
+	response := []internal.ServiceResp{}
+	for _, key := range prices {
+		item, err := s.redis.GetItem(c, key)
+		if err != nil {
+			return nil, error.New(platform.GetItemsRedisErr, err)
+		}
+
+		clientResp := internal.ServiceResp{}
+		err = json.Unmarshal([]byte(item), &clientResp)
+		if err != nil {
+			return nil, error.New(platform.UnmarshalErr, err)
+		}
+		response = append(response, clientResp)
+	}
+
+	return response, nil
+}
+
+func (s currencySrv) getPrices() (internal.ServiceResp, error.Error) {
+	key := time.Now().UTC().String()
+	priceBtc, err := s.coingecko.GetCoinPrice(context.Background(), "bitcoin")
+	priceEth, err := s.coingecko.GetCoinPrice(context.Background(), "ethereum")
 	if err != nil {
-		return client.ClientResp{}, error.New(platform.UnmarshalErr, err)
+		return internal.ServiceResp{}, error.New(platform.RequestClientErr, err)
 	}
 
-	return clientResp, nil
+	redisObj := internal.ServiceResp{
+		Coingecko: internal.Coins{
+			Bitcoin: internal.Info{
+				Symbol:   priceBtc.Symbol,
+				UsdPrice: priceBtc.UsdPrice,
+			},
+			Ethereum: internal.Info{
+				Symbol:   priceEth.Symbol,
+				UsdPrice: priceEth.UsdPrice,
+			},
+		},
+		Timestamp: key,
+	}
+
+	return redisObj, nil
 }

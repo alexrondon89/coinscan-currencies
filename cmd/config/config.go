@@ -20,6 +20,7 @@ type url struct {
 type cache struct {
 	TimeToUpdate   uint16
 	ExpirationTime uint16
+	ItemsToRecover uint16
 }
 
 type redis struct {

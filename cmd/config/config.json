@@ -18,7 +18,8 @@
     "db": 0,
     "cache": {
       "timeToUpdate": 5,
-      "expirationTime": 86400
+      "expirationTime": 86400,
+      "itemsToRecover": 100
     }
   }
 }

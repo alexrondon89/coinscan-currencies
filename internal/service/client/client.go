@@ -6,16 +6,11 @@ import (
 )
 
 type ClientIntf interface {
-	GetCoinPrice(c context.Context) (ClientResp, error.Error)
+	GetCoinPrice(c context.Context, coin string) (ClientResp, error.Error)
 }
 
 type ClientResp struct {
-	Name string `json:"name,omitempty"`
-	Info Coin   `json:"Info,omitempty"`
-}
-
-type Coin struct {
-	Symbol    string  `json:"symbol,omitempty"`
-	UsdPrice  float64 `json:"usdPrice,omitempty"`
-	Timestamp string  `json:"timestamp,omitempty"`
+	Name     string  `json:"name,omitempty"`
+	Symbol   string  `json:"symbol,omitempty"`
+	UsdPrice float64 `json:"usdPrice,omitempty"`
 }

@@ -1,16 +1,14 @@
 package main
 
 import (
-	"log"
-
 	"github.com/alexrondon89/coinscan-common/logger"
 	"github.com/alexrondon89/coinscan-common/redis"
-
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
 	"github.com/alexrondon89/coinscan-currencies/cmd/server"
 	"github.com/alexrondon89/coinscan-currencies/cmd/server/handler"
 	"github.com/alexrondon89/coinscan-currencies/internal/service"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client/coingecko"
+	"log"
 )
 
 func main() {
@@ -26,9 +24,9 @@ func main() {
 	}
 
 	coingeckCli := coingecko.New(logger, configSrv)
-	srv := service.New(logger, configSrv, coingeckCli, redisSrv)
+	srv := service.New(logger, configSrv, coingeckCli, nil, redisSrv)
 	hndlr := handler.NewCurrencyHandler(logger, configSrv, srv)
-	
+
 	server.New(logger, configSrv, hndlr).
 		AddPricesScanRoutes().
 		Start()
