@@ -25,30 +25,33 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 	}
 }
 
-func (cg coingecko) GetCoinPrice(c context.Context, coin string) (client.ClientResp, error.Error) {
-	header := map[string][]string{"content-type": {"application/json"}}
-	path := strings.Replace(cg.config.Coingecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
-	resp, err := http.New("GET", cg.config.Coingecko.Url.BaseUrl, path).
-		AddHeader(header).
-		Exec()
-
+func (cg coingecko) GetCoinPrice(c context.Context, coin string) ([]client.ClientResp, error.Error) {
+	path := strings.Replace(cg.config.CoinGecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
+	req, err := http.New("GET", cg.config.CoinGecko.Url.BaseUrl, path, nil)
 	if err != nil {
-		return client.ClientResp{}, error.New(platform.HttpRespErr, err)
+		return nil, error.New(platform.HttpCliErr, err)
+	}
+
+	resp, err := req.AddHeader(cg.config.CoinGecko.Header).Exec()
+	if err != nil {
+		return nil, error.New(platform.HttpRespErr, err)
 	}
 
 	respObject := CoinGeckoResp{}
 	err = json.Unmarshal(resp.Body, &respObject)
 	if err != nil {
-		return client.ClientResp{}, error.New(platform.UnmarshalErr, err)
+		return nil, error.New(platform.UnmarshalErr, err)
 	}
 
-	return buildClientResponse(respObject), nil
+	return buildClientResponse(respObject)
 }
 
-func buildClientResponse(respObject CoinGeckoResp) client.ClientResp {
-	return client.ClientResp{
-		Name:     respObject.Name,
-		Symbol:   respObject.Symbol,
-		UsdPrice: respObject.MarketData.CurrentPrice.Usd,
-	}
+func buildClientResponse(respObject CoinGeckoResp) ([]client.ClientResp, error.Error) {
+	return []client.ClientResp{
+		{
+			Name:     strings.ToLower(respObject.Name),
+			Symbol:   strings.ToLower(respObject.Symbol),
+			UsdPrice: respObject.MarketData.CurrentPrice.Usd,
+		},
+	}, nil
 }

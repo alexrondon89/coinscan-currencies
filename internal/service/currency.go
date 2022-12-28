@@ -19,8 +19,8 @@ import (
 type currencySrv struct {
 	logger        *logrus.Logger
 	config        *config.Config
-	coingecko     client.ClientIntf
-	coinmarketcap client.ClientIntf
+	coinGecko     client.ClientIntf
+	coinMarketCap client.ClientIntf
 	redis         redis.RedisIntf
 }
 
@@ -28,8 +28,8 @@ func New(logger *logrus.Logger, config *config.Config, coingecko, coinmarketcap 
 	cuSrv := currencySrv{
 		logger:        logger,
 		config:        config,
-		coingecko:     coingecko,
-		coinmarketcap: coinmarketcap,
+		coinGecko:     coingecko,
+		coinMarketCap: coinmarketcap,
 		redis:         redis,
 	}
 	cuSrv.updateCacheLastPrices()
@@ -123,24 +123,16 @@ func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceRes
 
 func (s currencySrv) getPrices() (internal.ServiceResp, error.Error) {
 	key := time.Now().UTC().String()
-	priceBtc, err := s.coingecko.GetCoinPrice(context.Background(), "bitcoin")
-	priceEth, err := s.coingecko.GetCoinPrice(context.Background(), "ethereum")
-	if err != nil {
-		return internal.ServiceResp{}, error.New(platform.RequestClientErr, err)
-	}
+	channelForCoinGecko := requestPricesInCoinGecko(s.config, s.coinGecko.GetCoinPrice)
+	pricesFromCoinGecko := buildResponseForCoinGeckoChannel(s.config, channelForCoinGecko)
+
+	channelForCoinMarketCap := requestPricesInCoinMarketCap(s.config, s.coinMarketCap.GetCoinPrice)
+	pricesFromCoinMarketCap := buildResponseForCoinMarketCap(channelForCoinMarketCap)
 
 	redisObj := internal.ServiceResp{
-		Coingecko: internal.Coins{
-			Bitcoin: internal.Info{
-				Symbol:   priceBtc.Symbol,
-				UsdPrice: priceBtc.UsdPrice,
-			},
-			Ethereum: internal.Info{
-				Symbol:   priceEth.Symbol,
-				UsdPrice: priceEth.UsdPrice,
-			},
-		},
-		Timestamp: key,
+		CoinGecko:     pricesFromCoinGecko,
+		CoinMarketCap: pricesFromCoinMarketCap,
+		Timestamp:     key,
 	}
 
 	return redisObj, nil

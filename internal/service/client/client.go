@@ -6,7 +6,7 @@ import (
 )
 
 type ClientIntf interface {
-	GetCoinPrice(c context.Context, coin string) (ClientResp, error.Error)
+	GetCoinPrice(c context.Context, coin string) ([]ClientResp, error.Error)
 }
 
 type ClientResp struct {

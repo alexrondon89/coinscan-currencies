@@ -1,15 +1,18 @@
 package config
 
 type Config struct {
-	Service   string
-	Version   string
-	Port      string
-	Coingecko service
-	Redis     redis
+	Service       string
+	Version       string
+	Port          string
+	CoinGecko     service
+	CoinMarketCap service
+	Redis         redis
+	Coins         map[string]string
 }
 
 type service struct {
-	Url url
+	Url    url
+	Header map[string][]string
 }
 
 type url struct {

@@ -8,6 +8,8 @@ import (
 	"github.com/alexrondon89/coinscan-currencies/cmd/server/handler"
 	"github.com/alexrondon89/coinscan-currencies/internal/service"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client/coingecko"
+	"github.com/alexrondon89/coinscan-currencies/internal/service/client/coinmarketcap"
+
 	"log"
 )
 
@@ -24,7 +26,8 @@ func main() {
 	}
 
 	coingeckCli := coingecko.New(logger, configSrv)
-	srv := service.New(logger, configSrv, coingeckCli, nil, redisSrv)
+	coinMarketCli := coinmarketcap.New(logger, configSrv)
+	srv := service.New(logger, configSrv, coingeckCli, coinMarketCli, redisSrv)
 	hndlr := handler.NewCurrencyHandler(logger, configSrv, srv)
 
 	server.New(logger, configSrv, hndlr).
