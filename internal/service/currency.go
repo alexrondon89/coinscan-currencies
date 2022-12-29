@@ -124,7 +124,7 @@ func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceRes
 func (s currencySrv) getPrices() (internal.ServiceResp, error.Error) {
 	key := time.Now().UTC().String()
 	channelForCoinGecko := requestPricesInCoinGecko(s.config, s.coinGecko.GetCoinPrice)
-	pricesFromCoinGecko := buildResponseForCoinGeckoChannel(s.config, channelForCoinGecko)
+	pricesFromCoinGecko := buildResponseForCoinGeckoChannel(channelForCoinGecko)
 
 	channelForCoinMarketCap := requestPricesInCoinMarketCap(s.config, s.coinMarketCap.GetCoinPrice)
 	pricesFromCoinMarketCap := buildResponseForCoinMarketCap(channelForCoinMarketCap)

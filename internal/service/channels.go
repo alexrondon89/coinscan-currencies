@@ -6,15 +6,19 @@ import (
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
 	"github.com/alexrondon89/coinscan-currencies/internal"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
+	"sync"
 )
 
 type getCoinPrice = func(context.Context, string) ([]client.ClientResp, error.Error)
 
 func requestPricesInCoinGecko(config *config.Config, getCoinPrice getCoinPrice) chan []internal.Info {
 	ch := make(chan []internal.Info)
+	wg := sync.WaitGroup{}
+	wg.Add(len(config.Coins))
 
 	for name, _ := range config.Coins {
 		go func(coin string) {
+			defer wg.Done()
 			price, err := getCoinPrice(context.Background(), coin)
 			if err != nil {
 				ch <- []internal.Info{
@@ -38,18 +42,19 @@ func requestPricesInCoinGecko(config *config.Config, getCoinPrice getCoinPrice) 
 		}(name)
 	}
 
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
 	return ch
 }
 
-func buildResponseForCoinGeckoChannel(config *config.Config, ch chan []internal.Info) []internal.Info {
+func buildResponseForCoinGeckoChannel(ch chan []internal.Info) []internal.Info {
 	var response []internal.Info
-	for i := 0; i < len(config.Coins); i++ {
-		select {
-		case value := <-ch:
-			response = append(response, value...)
-		}
+	for value := range ch {
+		response = append(response, value...)
 	}
-	close(ch)
 	return response
 }
 

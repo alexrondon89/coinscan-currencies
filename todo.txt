@@ -1,5 +1,4 @@
+- agregar objeto error para los response de los clientes
+- agregar timeout a los request
 - agregar las variablas de valor/clave a traves de variable de ambiente, lo mismo para docker
-- agregar goroutines para ether y bnb
-- agregar cliente coinmarketcap
-- agregar goroutines para ether y bnb
-
+- agregar otro cliente
