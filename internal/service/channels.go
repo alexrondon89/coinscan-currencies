@@ -35,6 +35,7 @@ func requestPricesInCoinGecko(config *config.Config, getCoinPrice getCoinPrice) 
 						Name:     price[0].Name,
 						Symbol:   price[0].Symbol,
 						UsdPrice: price[0].UsdPrice,
+						Error:    price[0].Error,
 					},
 				}
 				ch <- infoElement
@@ -83,6 +84,7 @@ func requestPricesInCoinMarketCap(config *config.Config, getCoinPrice getCoinPri
 				Name:     coin.Name,
 				Symbol:   coin.Symbol,
 				UsdPrice: coin.UsdPrice,
+				Error:    coin.Error,
 			}
 			infoResponse = append(infoResponse, item)
 		}

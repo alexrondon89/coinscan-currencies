@@ -1,4 +1,5 @@
-- agregar objeto error para los response de los clientes
 - agregar timeout a los request
-- agregar las variablas de valor/clave a traves de variable de ambiente, lo mismo para docker
+- agregar las variablas de clave/valor a traves de variable de ambiente, lo mismo para docker
+- agregar toda la configuracion a base de datos postgres y redis
+- verificar por que la clave de bnb no sale binancecoin
 - agregar otro cliente

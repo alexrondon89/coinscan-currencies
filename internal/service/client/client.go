@@ -13,4 +13,5 @@ type ClientResp struct {
 	Name     string  `json:"name,omitempty"`
 	Symbol   string  `json:"symbol,omitempty"`
 	UsdPrice float64 `json:"usdPrice,omitempty"`
+	Error    string  `json:"error,omitempty"`
 }

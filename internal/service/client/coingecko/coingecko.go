@@ -3,6 +3,7 @@ package coingecko
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"strings"
 
@@ -29,29 +30,42 @@ func (cg coingecko) GetCoinPrice(c context.Context, coin string) ([]client.Clien
 	path := strings.Replace(cg.config.CoinGecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
 	req, err := http.New("GET", cg.config.CoinGecko.Url.BaseUrl, path, nil)
 	if err != nil {
-		return nil, error.New(platform.HttpCliErr, err)
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, err))
 	}
 
 	resp, err := req.AddHeader(cg.config.CoinGecko.Header).Exec()
 	if err != nil {
-		return nil, error.New(platform.HttpRespErr, err)
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, err))
 	}
 
 	respObject := CoinGeckoResp{}
 	err = json.Unmarshal(resp.Body, &respObject)
 	if err != nil {
-		return nil, error.New(platform.UnmarshalErr, err)
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, err))
 	}
 
-	return buildClientResponse(respObject)
+	if respObject.Error != "" {
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, errors.New(respObject.Error)))
+	}
+
+	return buildClientResponse(respObject, nil)
 }
 
-func buildClientResponse(respObject CoinGeckoResp) ([]client.ClientResp, error.Error) {
+func buildClientResponse(respObject CoinGeckoResp, err error.Error) ([]client.ClientResp, error.Error) {
+
 	return []client.ClientResp{
 		{
 			Name:     strings.ToLower(respObject.Name),
 			Symbol:   strings.ToLower(respObject.Symbol),
 			UsdPrice: respObject.MarketData.CurrentPrice.Usd,
+			Error:    recoverErrorMsg(err),
 		},
 	}, nil
+}
+
+func recoverErrorMsg(err error.Error) string {
+	if err != nil {
+		return err.Error()
+	}
+	return ""
 }

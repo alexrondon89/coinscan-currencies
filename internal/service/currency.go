@@ -95,7 +95,7 @@ func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceRes
 	}
 
 	if len(items) == 0 {
-		s.logger.Info("items not found in redis service... calling clients")
+		s.logger.Info("items not found in redis service... calling client")
 		resp, err := s.getPrices()
 		if err != nil {
 			return nil, err
