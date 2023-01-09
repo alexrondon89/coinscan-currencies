@@ -3,14 +3,13 @@ package coinmarketcap
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"github.com/alexrondon89/coinscan-currencies/internal/platform"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 
 	"github.com/alexrondon89/coinscan-common/error"
-	"github.com/alexrondon89/coinscan-common/http"
+	httpCli "github.com/alexrondon89/coinscan-common/http/client"
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
 )
@@ -28,21 +27,24 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 }
 
 func (cmc coinmarketcap) GetCoinPrice(c context.Context, coins string) ([]client.ClientResp, error.Error) {
-	path := strings.Replace(cmc.config.CoinMarketCap.Url.Endpoints["coininfo"], ":coinid", coins, 1)
-	req, err := http.New("GET", cmc.config.CoinMarketCap.Url.BaseUrl, path, nil)
+	path := strings.Replace(cmc.config.CoinClients.CoinMarketCap.Url.Endpoints["coininfo"], ":coinid", coins, 1)
+	req, err := httpCli.New("GET", cmc.config.CoinClients.CoinMarketCap.Url.BaseUrl, path, nil)
 	if err != nil {
-		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(platform.HttpRespErr, err))
+		errType := platform.HttpRespErr
+		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
-	resp, err := req.AddHeader(cmc.config.CoinMarketCap.Header).Exec()
+	resp, err := req.AddHeader(cmc.config.CoinClients.CoinMarketCap.Header).Exec()
 	if err != nil {
-		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(platform.HttpRespErr, err))
+		errType := platform.HttpRespErr
+		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
 	respObject := CoinMarketCapResp{}
 	err = json.Unmarshal(resp.Body, &respObject)
 	if err != nil {
-		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(platform.HttpRespErr, err))
+		errType := platform.HttpRespErr
+		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
 	return buildClientResponse(coins, respObject, nil)
@@ -66,9 +68,10 @@ func buildClientResponse(coins string, buildClientResponse CoinMarketCapResp, er
 			}
 		}
 		if !found {
+			errType := platform.InvalidCoinErr
 			element := client.ClientResp{
 				Symbol: strings.ToLower(coin),
-				Error:  error.New(platform.HttpRespErr, errors.New("invalid coin")).Error(),
+				Error:  error.New(errType.Message, errType.HttpCode, nil).Error(),
 			}
 			cliRespElements = append(cliRespElements, element)
 		}

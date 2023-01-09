@@ -3,12 +3,12 @@ package coingecko
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"github.com/sirupsen/logrus"
 	"strings"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/alexrondon89/coinscan-common/error"
-	"github.com/alexrondon89/coinscan-common/http"
+	httpCli "github.com/alexrondon89/coinscan-common/http/client"
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
 	"github.com/alexrondon89/coinscan-currencies/internal/platform"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
@@ -27,25 +27,29 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 }
 
 func (cg coingecko) GetCoinPrice(c context.Context, coin string) ([]client.ClientResp, error.Error) {
-	path := strings.Replace(cg.config.CoinGecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
-	req, err := http.New("GET", cg.config.CoinGecko.Url.BaseUrl, path, nil)
+	path := strings.Replace(cg.config.CoinClients.CoinGecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
+	req, err := httpCli.New("GET", cg.config.CoinClients.CoinGecko.Url.BaseUrl, path, nil)
 	if err != nil {
-		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, err))
+		errType := platform.HttpRespErr
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
-	resp, err := req.AddHeader(cg.config.CoinGecko.Header).Exec()
+	resp, err := req.AddHeader(cg.config.CoinClients.CoinGecko.Header).Exec()
 	if err != nil {
-		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, err))
+		errType := platform.HttpRespErr
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
 	respObject := CoinGeckoResp{}
 	err = json.Unmarshal(resp.Body, &respObject)
 	if err != nil {
-		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, err))
+		errType := platform.HttpRespErr
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
 	if respObject.Error != "" {
-		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(platform.HttpRespErr, errors.New(respObject.Error)))
+		errType := platform.HttpRespErr
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
 	return buildClientResponse(respObject, nil)

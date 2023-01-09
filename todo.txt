@@ -1,5 +1,5 @@
-- agregar timeout a los request
+- agregar timeout a los request..... verificar la interfaz de servicio y ver que tipo de error devolver
+- agregar toda la configuracion a base de datos postgres y redis, incluyendo una tabla con info de todas las monedas
 - agregar las variablas de clave/valor a traves de variable de ambiente, lo mismo para docker
-- agregar toda la configuracion a base de datos postgres y redis
 - verificar por que la clave de bnb no sale binancecoin
 - agregar otro cliente

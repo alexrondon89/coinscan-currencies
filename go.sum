@@ -40,6 +40,18 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/alexrondon89/coinscan-common v0.0.2-0.20221228222317-c266e87ccb8d h1:dOSvTlVsAvuSOlF80cW7/sA3+m11ny4ga4LO9gzVnKs=
 github.com/alexrondon89/coinscan-common v0.0.2-0.20221228222317-c266e87ccb8d/go.mod h1:qHSDrCnGTwFFwEFPwo04jX79ne1U1c2BQMO50S22LmM=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230108145038-35f1c324c66d h1:/3Jwr6VUZSw9ez14CmHDhw9wRrs0HRD8mXJGTdx2ln8=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230108145038-35f1c324c66d/go.mod h1:o2faR2Q6h0AjPD+T0Xwkd4HTJ8uJZAbNkFYBI99f9vI=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230108234814-3dc7fcc4c3f3 h1:MU7QN5NM63cEi/P5JdVawwPwwMlOux/kfvOFdw4N81k=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230108234814-3dc7fcc4c3f3/go.mod h1:o2faR2Q6h0AjPD+T0Xwkd4HTJ8uJZAbNkFYBI99f9vI=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109004342-a1163fd6d451 h1:EO51RgGFtAOXdS1UEdhCrJrJRT3NKbO4NvcjD9vE62o=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109004342-a1163fd6d451/go.mod h1:o2faR2Q6h0AjPD+T0Xwkd4HTJ8uJZAbNkFYBI99f9vI=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109012112-30922dea506f h1:r9V1Uvzj9ko8CyFGl2zUtpAli2d+J+PJGoatMvX6f4w=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109012112-30922dea506f/go.mod h1:o2faR2Q6h0AjPD+T0Xwkd4HTJ8uJZAbNkFYBI99f9vI=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109013442-03f9b3b18254 h1:BP+yJ+KrJ5e60jbxDWtsR5otzD7tuFLx6nyqcfBUxCE=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109013442-03f9b3b18254/go.mod h1:o2faR2Q6h0AjPD+T0Xwkd4HTJ8uJZAbNkFYBI99f9vI=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109122335-168fb0579803 h1:wFCO49WX4GovRX7nvz/tlHYnGQ2xHgaYEeOMHJaakfM=
+github.com/alexrondon89/coinscan-common v0.0.2-0.20230109122335-168fb0579803/go.mod h1:o2faR2Q6h0AjPD+T0Xwkd4HTJ8uJZAbNkFYBI99f9vI=
 github.com/andybalholm/brotli v1.0.4 h1:V7DdXeJtZscaqfNuAdSRuRFzuiKlHSC/Zh3zl9qY3JY=
 github.com/andybalholm/brotli v1.0.4/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -73,6 +85,7 @@ github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC
 github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
 github.com/gofiber/fiber/v2 v2.40.1 h1:pc7n9VVpGIqNsvg9IPLQhyFEMJL8gCs1kneH5D1pIl4=
 github.com/gofiber/fiber/v2 v2.40.1/go.mod h1:Gko04sLksnHbzLSRBFWPFdzM9Ws9pRxvvIaohJK1dsk=
+github.com/gofiber/fiber/v2 v2.41.0/go.mod h1:RdebcCuCRFp4W6hr3968/XxwJVg0K+jr9/Ae0PFzZ0Q=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/groupcache v0.0.0-20191227052852-215e87163ea7/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
@@ -151,6 +164,7 @@ github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxec
 github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovkB8vQcUbaXHg=
 github.com/mattn/go-isatty v0.0.16 h1:bq3VjFmv/sOjHtdEhmkEV4x1AJtvUvOJ2PFAZ5+peKQ=
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
+github.com/mattn/go-isatty v0.0.17/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/mattn/go-runewidth v0.0.14 h1:+xnbZSEeDbOIg5/mE6JF0w6n9duR1l3/WmbinWVwUuU=
 github.com/mattn/go-runewidth v0.0.14/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
@@ -198,6 +212,7 @@ github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6Kllzaw
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasthttp v1.41.0 h1:zeR0Z1my1wDHTRiamBCXVglQdbUwgb9uWG3k1HQz6jY=
 github.com/valyala/fasthttp v1.41.0/go.mod h1:f6VbjjoI3z1NDOZOv17o6RvtRSWxC77seBFc2uWtgiY=
+github.com/valyala/fasthttp v1.43.0/go.mod h1:f6VbjjoI3z1NDOZOv17o6RvtRSWxC77seBFc2uWtgiY=
 github.com/valyala/tcplisten v1.0.0 h1:rBHj/Xf+E1tRGZyWIWwJDiRY0zc1Js+CV5DqwacVSA8=
 github.com/valyala/tcplisten v1.0.0/go.mod h1:T0xQ8SeCZGxckz9qRXTfG43PvQ/mcWh7FwZEA7Ioqkc=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

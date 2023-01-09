@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/alexrondon89/coinscan-common/error"
+	errCommon "github.com/alexrondon89/coinscan-common/error"
 	"github.com/alexrondon89/coinscan-common/redis"
 	"github.com/alexrondon89/coinscan-currencies/internal/platform"
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"sort"
 	"time"
@@ -62,10 +63,10 @@ func (s currencySrv) updateCacheLastPrices() {
 	}()
 }
 
-func (s currencySrv) getPricesFromRedis(c context.Context, cursor uint64, match string, numberOfItems int64) ([]string, error.Error) {
+func (s currencySrv) getPricesFromRedis(c context.Context, cursor uint64, match string, numberOfItems int64) ([]string, error) {
 	items, nextCursor, err := s.redis.Scan(c, cursor, match, numberOfItems)
 	if err != nil {
-		return nil, error.New(platform.GetItemsRedisErr, err)
+		return nil, buildFiberError(platform.GetItemsRedisErr, err)
 	}
 	itemsFound := len(items)
 	if itemsFound == 0 {
@@ -79,7 +80,7 @@ func (s currencySrv) getPricesFromRedis(c context.Context, cursor uint64, match 
 		s.logger.Info(fmt.Sprintf("new recursive call in redis is neccessary to find %d elements", difference))
 		moreItems, err := s.getPricesFromRedis(c, nextCursor, match, int64(difference))
 		if err != nil {
-			return nil, error.New(platform.GetItemsRedisErr, err)
+			return nil, buildFiberError(platform.GetItemsRedisErr, err)
 		}
 
 		items = append(items, moreItems...)
@@ -88,7 +89,7 @@ func (s currencySrv) getPricesFromRedis(c context.Context, cursor uint64, match 
 	return items, nil
 }
 
-func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceResp, error.Error) {
+func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceResp, error) {
 	items, err := s.getPricesFromRedis(c, 0, "*", int64(s.config.Redis.Cache.ItemsToRecover))
 	if err != nil {
 		return nil, err
@@ -107,13 +108,13 @@ func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceRes
 	for _, key := range items {
 		item, err := s.redis.GetItem(c, key)
 		if err != nil {
-			return nil, error.New(platform.GetItemsRedisErr, err)
+			return nil, buildFiberError(platform.GetItemsRedisErr, err)
 		}
 
 		clientResp := internal.ServiceResp{}
 		err = json.Unmarshal([]byte(item), &clientResp)
 		if err != nil {
-			return nil, error.New(platform.UnmarshalErr, err)
+			return nil, buildFiberError(platform.UnmarshalErr, err)
 		}
 		response = append(response, clientResp)
 	}
@@ -121,7 +122,7 @@ func (s currencySrv) GetPricesFromApis(c context.Context) ([]internal.ServiceRes
 	return response, nil
 }
 
-func (s currencySrv) getPrices() (internal.ServiceResp, error.Error) {
+func (s currencySrv) getPrices() (internal.ServiceResp, error) {
 	key := time.Now().UTC().String()
 	channelForCoinGecko := requestPricesInCoinGecko(s.config, s.coinGecko.GetCoinPrice)
 	pricesFromCoinGecko := buildResponseForCoinGeckoChannel(channelForCoinGecko)
@@ -136,4 +137,9 @@ func (s currencySrv) getPrices() (internal.ServiceResp, error.Error) {
 	}
 
 	return redisObj, nil
+}
+
+func buildFiberError(model platform.ErrorModel, err error) error {
+	newErr := errCommon.New(model.Message, model.HttpCode, err)
+	return fiber.NewError(newErr.HttpCode, newErr.Error())
 }

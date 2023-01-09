@@ -37,6 +37,16 @@
       "itemsToRecover": 100
     }
   },
+  "http": {
+    "server" : {
+      "readTimeout": 5,
+      "WriteTimeout": 10,
+      "IdleTimeout": 1
+    },
+    "client": {
+     "timeout": 1
+    }
+  },
   "coins": {
     "bitcoisn": "btcass",
     "ethereum": "eth",

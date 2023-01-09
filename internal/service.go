@@ -2,11 +2,10 @@ package internal
 
 import (
 	"context"
-	"github.com/alexrondon89/coinscan-common/error"
 )
 
 type ServiceIntf interface {
-	GetPricesFromApis(c context.Context) ([]ServiceResp, error.Error)
+	GetPricesFromApis(c context.Context) ([]ServiceResp, error)
 }
 
 type ServiceResp struct {
