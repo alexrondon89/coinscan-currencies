@@ -5,9 +5,13 @@ go 1.18
 require (
 	github.com/alexrondon89/coinscan-common v0.0.2-0.20230109122335-168fb0579803
 	github.com/gofiber/fiber/v2 v2.41.0
+	github.com/lib/pq v1.10.7
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/viper v1.14.0
 )
+
+replace github.com/alexrondon89/coinscan-common => /Users/cristhian/go/src/coinscan-common
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect

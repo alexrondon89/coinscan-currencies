@@ -3,15 +3,21 @@ package coinmarketcap
 import (
 	"context"
 	"encoding/json"
-	"github.com/alexrondon89/coinscan-currencies/internal/platform"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
 	"github.com/alexrondon89/coinscan-common/error"
 	httpCli "github.com/alexrondon89/coinscan-common/http/client"
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
+	"github.com/alexrondon89/coinscan-currencies/internal/platform"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
+)
+
+const (
+	timeout = http.StatusRequestTimeout
 )
 
 type coinmarketcap struct {
@@ -26,7 +32,7 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 	}
 }
 
-func (cmc coinmarketcap) GetCoinPrice(c context.Context, coins string) ([]client.ClientResp, error.Error) {
+func (cmc coinmarketcap) GetCoinPrice(ctx context.Context, coins string) ([]client.ClientResp, error.Error) {
 	path := strings.Replace(cmc.config.CoinClients.CoinMarketCap.Url.Endpoints["coininfo"], ":coinid", coins, 1)
 	req, err := httpCli.New("GET", cmc.config.CoinClients.CoinMarketCap.Url.BaseUrl, path, nil)
 	if err != nil {
@@ -34,10 +40,20 @@ func (cmc coinmarketcap) GetCoinPrice(c context.Context, coins string) ([]client
 		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
-	resp, err := req.AddHeader(cmc.config.CoinClients.CoinMarketCap.Header).Exec()
+	ctxWithTimeOut, cancelFunc := context.WithTimeout(ctx, time.Duration(cmc.config.Http.Client.Timeout)*time.Second)
+	defer cancelFunc()
+
+	resp, err := req.
+		AddHeader(cmc.config.CoinClients.CoinMarketCap.Header).
+		AddContext(ctxWithTimeOut).
+		Exec()
 	if err != nil {
 		errType := platform.HttpRespErr
 		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(errType.Message, errType.HttpCode, err))
+	}
+
+	if statusCode := resp.Response.StatusCode; statusCode == timeout {
+		return buildClientResponse(coins, CoinMarketCapResp{}, error.New(resp.Response.Status, statusCode, nil))
 	}
 
 	respObject := CoinMarketCapResp{}

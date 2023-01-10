@@ -1,11 +1,13 @@
 package server
 
 import (
-	"github.com/alexrondon89/coinscan-common/http/server"
-	"github.com/alexrondon89/coinscan-currencies/cmd/config"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
-	"time"
+
+	"github.com/alexrondon89/coinscan-common/http/server"
+	"github.com/alexrondon89/coinscan-currencies/cmd/config"
 )
 
 type WebServer struct {
@@ -17,9 +19,9 @@ type WebServer struct {
 
 func New(logger *logrus.Logger, config *config.Config, handler CurrencyIntf) *WebServer {
 	serverConfig := fiber.Config{
-		ReadTimeout:  time.Duration(int64(config.Server.ReadTimeout)),
-		WriteTimeout: time.Duration(int64(config.Server.WriteTimeout)),
-		IdleTimeout:  time.Duration(int64(config.Server.IdleTimeout)),
+		ReadTimeout:  time.Duration(config.Http.Server.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(config.Http.Server.WriteTimeout) * time.Second,
+		IdleTimeout:  time.Duration(config.Http.Server.IdleTimeout) * time.Second,
 		ErrorHandler: handler.ErrorHandler,
 	}
 	instance := server.New(serverConfig)

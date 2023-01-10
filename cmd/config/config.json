@@ -2,27 +2,37 @@
   "service": "coinscan-currencies",
   "version": "0.0.1",
   "port": ":3001",
-  "coinGecko":{
-    "header": {
-      "ContentType": ["application/json"]
-    },
-    "url": {
-      "baseUrl": "https://api.coingecko.com",
-      "endpoints": {
-        "coinInfo":"/api/v3/coins/:coinid"
+  "coinClients": {
+    "coinGecko": {
+      "header": {
+        "ContentType": [
+          "application/json"
+        ]
+      },
+      "url": {
+        "baseUrl": "https://api.coingecko.com",
+        "endpoints": {
+          "coinInfo":"/api/v3/coins/:coinid"
+        }
       }
-    }
-  },
-  "coinmarketcap": {
-    "header": {
-      "X-CMC_PRO_API_KEY": ["6a6a84fe-ed29-466f-91b2-cefdc92c97fd"],
-      "Accept": ["application/json"],
-      "accept-Encoding": ["deflate, gzip"]
     },
-    "url": {
-      "baseUrl": "https://pro-api.coinmarketcap.com",
-      "endpoints": {
-        "coinInfo": "/v1/cryptocurrency/quotes/latest?symbol=:coinid"
+    "coinmarketcap": {
+      "header": {
+        "X-CMC_PRO_API_KEY": [
+          "6a6a84fe-ed29-466f-91b2-cefdc92c97fd"
+        ],
+        "Accept": [
+          "application/json"
+        ],
+        "accept-Encoding": [
+          "deflate, gzip"
+        ]
+      },
+      "url": {
+        "baseUrl": "https://pro-api.coinmarketcap.com",
+        "endpoints": {
+          "coinInfo": "/v1/cryptocurrency/quotes/latest?symbol=:coinid"
+        }
       }
     }
   },
@@ -48,7 +58,7 @@
     }
   },
   "coins": {
-    "bitcoisn": "btcass",
+    "bitcoin": "btc",
     "ethereum": "eth",
     "binancecoin": "bnb"
   }

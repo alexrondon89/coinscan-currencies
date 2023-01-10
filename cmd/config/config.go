@@ -25,8 +25,8 @@ type redis struct {
 }
 
 type http struct {
-	server server
-	client client
+	Server server
+	Client client
 }
 
 type server struct {
@@ -36,7 +36,7 @@ type server struct {
 }
 
 type client struct {
-	timeout uint8
+	Timeout uint8
 }
 
 type coinClients struct {

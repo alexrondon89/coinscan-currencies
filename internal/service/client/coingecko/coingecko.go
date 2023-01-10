@@ -3,7 +3,9 @@ package coingecko
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -12,6 +14,10 @@ import (
 	"github.com/alexrondon89/coinscan-currencies/cmd/config"
 	"github.com/alexrondon89/coinscan-currencies/internal/platform"
 	"github.com/alexrondon89/coinscan-currencies/internal/service/client"
+)
+
+const (
+	timeout = http.StatusRequestTimeout
 )
 
 type coingecko struct {
@@ -26,18 +32,28 @@ func New(logger *logrus.Logger, config *config.Config) client.ClientIntf {
 	}
 }
 
-func (cg coingecko) GetCoinPrice(c context.Context, coin string) ([]client.ClientResp, error.Error) {
-	path := strings.Replace(cg.config.CoinClients.CoinGecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
-	req, err := httpCli.New("GET", cg.config.CoinClients.CoinGecko.Url.BaseUrl, path, nil)
+func (cg coingecko) GetCoinPrice(ctx context.Context, coin string) ([]client.ClientResp, error.Error) {
+	//path := strings.Replace(cg.config.CoinClients.CoinGecko.Url.Endpoints["coininfo"], ":coinid", coin, 1)
+	req, err := httpCli.New("GET", cg.config.CoinClients.CoinGecko.Url.BaseUrl, "/health", nil)
 	if err != nil {
 		errType := platform.HttpRespErr
 		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(errType.Message, errType.HttpCode, err))
 	}
 
-	resp, err := req.AddHeader(cg.config.CoinClients.CoinGecko.Header).Exec()
+	ctxWithTimeOut, cancelFunc := context.WithTimeout(ctx, time.Duration(cg.config.Http.Client.Timeout)*time.Second)
+	defer cancelFunc()
+
+	resp, err := req.
+		AddHeader(cg.config.CoinClients.CoinGecko.Header).
+		AddContext(ctxWithTimeOut).
+		Exec()
 	if err != nil {
 		errType := platform.HttpRespErr
 		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(errType.Message, errType.HttpCode, err))
+	}
+
+	if statusCode := resp.Response.StatusCode; statusCode == timeout {
+		return buildClientResponse(CoinGeckoResp{Name: coin}, error.New(resp.Response.Status, statusCode, nil))
 	}
 
 	respObject := CoinGeckoResp{}
